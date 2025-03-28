@@ -148,7 +148,7 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown, Is.EqualTo("## A new Section\n\r\n"));
+        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\n".UnifyLineEndings()));
     }
 
     [Test]
@@ -159,7 +159,7 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown, Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n"));
+        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n".UnifyLineEndings()));
     }
 
     [Test]
@@ -170,7 +170,7 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown, Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n"));
+        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n".UnifyLineEndings()));
     }
 
     [Test]
@@ -181,7 +181,7 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown, Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n"));
+        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n".UnifyLineEndings()));
     }
 
     [Test]
@@ -192,7 +192,7 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown, Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n* bullet point three\n\r\n"));
+        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n* bullet point three\n\r\n".UnifyLineEndings()));
     }    
 
     [Test]
@@ -203,8 +203,7 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown, Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n* bullet point three\n\r\nAnother paragraph of text\n\r\n1. Bonus numeric list one\n\r\n2. Bonus numeric list two\n\r\n"
-));
+        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n* bullet point three\n\r\nAnother paragraph of text\n\r\n1. Bonus numeric list one\n\r\n2. Bonus numeric list two\n\r\n".UnifyLineEndings()));
     }
 
     [Test]
@@ -214,7 +213,7 @@ public class NotebookTests
 
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
-        Assert.That(markdown, Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n* bullet point three\n\r\nAnother paragraph of text\n\r\n1. Bonus numeric list one\n\r\n2. Bonus numeric list two\n\r\n3. Bonus numeric list three\n\r\n[done]\n\r\n"));
+        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n* bullet point three\n\r\nAnother paragraph of text\n\r\n1. Bonus numeric list one\n\r\n2. Bonus numeric list two\n\r\n3. Bonus numeric list three\n\r\n[done]\n\r\n".UnifyLineEndings()));
     }
 
     // These tests require creation of a real kernel, tested manually for now.
@@ -256,4 +255,12 @@ public class NotebookTests
     //     var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/initial.ipynb");
     //     sut.DisplayNextSequentialSectionFromPrecedingMarkdownCellUsingStyleString("cell1", styleString);
     // }
+}
+
+public static class StringExtensions
+{
+    public static string UnifyLineEndings(this string str)
+    {
+        return str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
+    }
 }
