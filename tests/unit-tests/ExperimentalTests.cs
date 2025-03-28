@@ -1,5 +1,6 @@
 using Microsoft.DotNet.Interactive;
 using Microsoft.DotNet.Interactive.CSharp;
+using Microsoft.DotNet.Interactive.Documents;
 using Microsoft.DotNet.Interactive.Events;
 using Microsoft.DotNet.Interactive.Mermaid;
 
