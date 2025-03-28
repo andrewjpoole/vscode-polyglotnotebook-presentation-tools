@@ -5,6 +5,7 @@
     <RootNamespace>sequential_reveal_md_tool</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
   

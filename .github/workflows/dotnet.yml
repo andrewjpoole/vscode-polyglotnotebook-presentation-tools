@@ -16,17 +16,22 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
         cache: true
+
     - name: Restore dependencies
-      run: dotnet restore vscode-polyglotnotebook-presentation-tools.sln
+      run: dotnet restore vscode-polyglotnotebook-presentation-tools.sln --no-cache
+
     - name: Build
       run: dotnet build vscode-polyglotnotebook-presentation-tools.sln --no-restore
+
     - name: Test
       run: dotnet test vscode-polyglotnotebook-presentation-tools.sln --no-build --logger trx --results-directory "TestResults" --verbosity normal
+
     - name: Upload dotnet test results
       uses: actions/upload-artifact@v4
       with:
