@@ -1,7 +1,7 @@
 # Sequential Reveal Markdown Tool
 
 [![NuGet](https://img.shields.io/nuget/v/sequential-reveal-md-tool.svg)](https://www.nuget.org/packages/sequential-reveal-md-tool/)
-[![Build](https://github.com/your-repo/vscode-polyglotnotebook-presentation-tools/actions/workflows/dotnet.yml/badge.svg)](https://github.com/your-repo/vscode-polyglotnotebook-presentation-tools/actions)
+[![Build](https://github.com/andrewjpoole/vscode-polyglotnotebook-presentation-tools/actions/workflows/dotnet.yml/badge.svg)](https://github.com/andrewjpoole/vscode-polyglotnotebook-presentation-tools/actions)
 
 A tool for sequentially revealing Markdown content in Polyglot Notebooks, designed for use in presentations similar to the way you would animate text appearing in powerpoint or google slides. This library allows you to progressively display sections of Markdown content, making it ideal for step-by-step explanations or interactive presentations.
 
