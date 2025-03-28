@@ -23,3 +23,5 @@ A tool for sequentially revealing Markdown content in Polyglot Notebooks, design
 
 See the [example notebook file here](..\..\examples\sequential-reveal.ipynb)
 
+There are a couple of alternative methods which specify the styles in different ways.
+
