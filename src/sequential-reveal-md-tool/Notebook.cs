@@ -59,49 +59,32 @@ public record Notebook(
         return Cells[cellIndex];
     }
 
+    /// <summary>
+    /// Display the next sequential section from the preceding Markdown cell.
+    /// </summary>
+    /// <param name="tag">A string containing a cell tag used to locate the current cell in the notebook file, consequently also used to find the preceding markdown cell.</param>
     public void DisplayNextSequentialSectionFromPrecedingMarkdownCell(string tag)
     {
         var markdownContent = RenderNextSequentialSectionFromPrecedingMarkdownCell(tag);
         markdownContent.DisplayAs("text/markdown");
     }
 
+    /// <summary>
+    /// Display the next sequential section from the preceding Markdown cell using a style string.
+    /// This method is useful for applying specific styles to the displayed content.
+    /// </summary>
+    /// <param name="tag">A string containing a cell tag used to locate the current cell in the notebook file, consequently also used to find the preceding markdown cell.</param>
+    /// <param name="styleString">A string containing css styles which will be prepended to the markdown output, intended to be used to make font size large enough to see during a presentation.
+    // example: <link rel=\"stylesheet\" href=\"styles.css\"> where styles.css is a file in the same directory as the notebook file.
+    // example: <style>font-size: 2em;</style> where the style is applied to the markdown output.
+    // </param>
     public void DisplayNextSequentialSectionFromPrecedingMarkdownCellUsingStyleString(string tag, string styleString)
     {
         var styleLines = styleString.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
 
         var markdownContent = RenderNextSequentialSectionFromPrecedingMarkdownCell(tag, styleLines);
         markdownContent.DisplayAs("text/markdown");
-    }
-
-    public void DisplayNextSequentialSectionFromPrecedingMarkdownCellUsingStyleFilePath(string tag, string styleFilePath)
-    {
-        if (!File.Exists(styleFilePath))
-        {
-            throw new FileNotFoundException("Style file not found.", styleFilePath);
-        }
-
-        var styleFileContent = File.ReadAllText(styleFilePath);
-        var styleLines = styleFileContent.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
-
-        var markdownContent = RenderNextSequentialSectionFromPrecedingMarkdownCell(tag, styleLines);
-        markdownContent.DisplayAs("text/markdown");
-    }
-
-    public void DisplayNextSequentialSectionFromPrecedingMarkdownCellUsingStyleCellTag(string tag, string styleCellTag = "style")
-    {
-        var styleCell = GetCellWithTag(styleCellTag);
-        string[] styleLines = [];
-        if(styleCell != null)
-        {
-            // fetch html content from style cell, we should always output this before the markdown content.
-            styleLines = styleCell.GetSourceLines();
-        }
-
-        var markdownContent = RenderNextSequentialSectionFromPrecedingMarkdownCell(tag, styleLines);
-        markdownContent.DisplayAs("text/markdown");
-    }
-
-    
+    }    
 
     public string RenderNextSequentialSectionFromPrecedingMarkdownCell(string tag, string[]? styleLines = null)
     {
@@ -113,7 +96,7 @@ public record Notebook(
         if(currentCellIndex == -1)
             throw new ArgumentException("Tag not found in any cell.");
 
-        if(currentCellIndex <= 1)
+        if(currentCellIndex == 0)
             throw new ArgumentException("Tag found in first cell. There must be a preceding cell containing Markdown.");
 
         var precedingMarkdownCellIndex = currentCellIndex - 1;
@@ -154,7 +137,7 @@ public record Notebook(
                 {
                     sb.Append(line);
                 }
-                sb.Append(Environment.NewLine);
+                sb.AppendLine(Environment.NewLine);
             }
             sb.AppendLine(markdownSections[0]);
             return sb.ToString();
@@ -194,7 +177,7 @@ public record Notebook(
             {
                 sb.Append(line);
             }
-            sb.Append(Environment.NewLine);
+            sb.AppendLine(Environment.NewLine);
         }
 
         for (int i = 0; i <= sectionsToDisplay; i++)

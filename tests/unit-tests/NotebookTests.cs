@@ -207,7 +207,7 @@ public class NotebookTests
     }
 
     [Test]
-    public void RenderNextSequentialSectionFromPrecedingMarkdownCell_ShouldReturnNull_WhenAllSectionsAreRendered()
+    public void RenderNextSequentialSectionFromPrecedingMarkdownCell_ShouldReturnCorrectMarkdown_WhenAllSectionsAreRendered()
     {
         var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/after10.ipynb");
 
@@ -216,45 +216,17 @@ public class NotebookTests
         Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n* bullet point three\n\r\nAnother paragraph of text\n\r\n1. Bonus numeric list one\n\r\n2. Bonus numeric list two\n\r\n3. Bonus numeric list three\n\r\n[done]\n\r\n".UnifyLineEndings()));
     }
 
-    // These tests require creation of a real kernel, tested manually for now.
-    // [Test]
-    // public void DisplayNextSequentialSectionFromPrecedingMarkdownCellUsingStyleCellTag_ShouldCompleteWithoutThrowing()
-    // {        
-    //     var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/initial.ipynb");
-    //     sut.DisplayNextSequentialSectionFromPrecedingMarkdownCellUsingStyleCellTag("cell1", "mdstyle");
-    // }
+    [Test]
+    public void RenderNextSequentialSectionFromPrecedingMarkdownCellWithStyleString_ShouldReturnCorrectMarkdown_WhenAllSectionsAreRendered()
+    {
+        var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/initial.ipynb");
 
-    // [Test]
-    // public void DisplayNextSequentialSectionFromPrecedingMarkdownCellUsingStyleFilePath_ShouldCompleteWithoutThrowing()
-    // {   
-    //     var styleFilePath = TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/styleFile.css";
-    //     var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/initial.ipynb");
-    //     sut.DisplayNextSequentialSectionFromPrecedingMarkdownCellUsingStyleFilePath("cell1", styleFilePath);
-    // }
+        var styleString = "<link rel=\"stylesheet\" href=\"styles.css\">";
+        var styleLines = styleString.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
+        var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1", styleLines);
 
-    // [Test]
-    // public void DisplayNextSequentialSectionFromPrecedingMarkdownCellUsingStyleString_ShouldCompleteWithoutThrowing()
-    // {   
-    //     var styleString = """
-    //     <style> 
-    //     h1 {
-    //     font-size: 5rem;
-    //     }
-    //     h2 {
-    //     font-size: 4rem;
-    //     }
-    //     h3 {
-    //     font-size: 3rem;
-    //     }
-    //     body, p, ul, ol {
-    //     font-size: 2.5rem;
-    //     }
-    //     </style>
-    //     """;
-
-    //     var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/initial.ipynb");
-    //     sut.DisplayNextSequentialSectionFromPrecedingMarkdownCellUsingStyleString("cell1", styleString);
-    // }
+        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("<link rel=\"stylesheet\" href=\"styles.css\">\r\n\r\n## A new Section\n\r\n".UnifyLineEndings()));
+    }    
 }
 
 public static class StringExtensions

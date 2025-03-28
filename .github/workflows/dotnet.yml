@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-Test-Publish-Packages:
 
     runs-on: ubuntu-latest
 
@@ -43,4 +43,4 @@ jobs:
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       env:
         NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-      run: dotnet nuget push **/bin/*/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push **/bin/*/*.nupkg --api-key $NUGET_API_KEY --source https://api.nuget.org/v3/index.json  --skip-duplicate
