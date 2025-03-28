@@ -1,10 +1,7 @@
-﻿using System.Management.Automation;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Microsoft.DotNet.Interactive.Commands;
 using Microsoft.DotNet.Interactive.Connection;
 using Microsoft.DotNet.Interactive.Documents;
-using Microsoft.DotNet.Interactive.PowerShell;
-using Namotion.Reflection;
 using sequential_reveal_md_tool;
 
 namespace SequentialRevealMarkdownToolTests;

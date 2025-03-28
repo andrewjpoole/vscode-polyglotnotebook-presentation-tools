@@ -31,5 +31,5 @@
   <ItemGroup>
     <None Include="testData\sequentialReveal\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-
+  
 </Project>
