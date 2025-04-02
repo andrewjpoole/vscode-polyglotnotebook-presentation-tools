@@ -144,7 +144,7 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);        
-        var markdownLines = markdown.Split(["\r\n"], StringSplitOptions.None);
+        var markdownLines = markdown.SplitOnUniversalLineEndings();
         Assert.That(markdownLines.Length, Is.EqualTo(5));
         Assert.That(markdownLines[0], Is.EqualTo("<!-- Comment to show content hint while cell is collapsed -->"));
         Assert.That(markdownLines[1], Is.EqualTo("<link rel=\"stylesheet\" href=\"styles.css\">"));
@@ -159,7 +159,7 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        var markdownLines = markdown.Split(["\r\n"], StringSplitOptions.None);
+        var markdownLines = markdown.SplitOnUniversalLineEndings();
         Assert.That(markdownLines.Length, Is.EqualTo(9));
         
         Assert.That(markdownLines[0], Is.EqualTo("<!-- Comment to show content hint while cell is collapsed -->"));
@@ -175,7 +175,7 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        var markdownLines = markdown.Split(["\r\n"], StringSplitOptions.None);
+        var markdownLines = markdown.SplitOnUniversalLineEndings();
         Assert.That(markdownLines.Length, Is.EqualTo(11));
         Assert.That(markdownLines.Last(x => string.IsNullOrWhiteSpace(x) == false), Is.EqualTo("- bullet point one"));
     }   
@@ -188,7 +188,7 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        var markdownLines = markdown.Split(["\r\n"], StringSplitOptions.None);
+        var markdownLines = markdown.SplitOnUniversalLineEndings();
         Assert.That(markdownLines.Length, Is.EqualTo(18));        
         Assert.That(markdownLines.Last(x => string.IsNullOrWhiteSpace(x) == false), Is.EqualTo("2. Bonus numeric list two"));
         
@@ -201,7 +201,7 @@ public class NotebookTests
 
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
-        var markdownLines = markdown.Split(["\r\n"], StringSplitOptions.None);
+        var markdownLines = markdown.SplitOnUniversalLineEndings();
         Assert.That(markdownLines.Length, Is.EqualTo(20));
         Assert.That(markdownLines.Last(x => string.IsNullOrWhiteSpace(x) == false), Is.EqualTo("[done]"));        
     }    
@@ -212,5 +212,10 @@ public static class StringExtensions
     public static string UnifyLineEndings(this string str)
     {
         return str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
+    }
+
+    public static string[] SplitOnUniversalLineEndings(this string markdown)
+    {
+        return markdown.Split(["\r\n", "\n"], StringSplitOptions.None);
     }
 }
