@@ -1,8 +1,4 @@
-﻿using System.Text.Json;
-using Microsoft.DotNet.Interactive.Commands;
-using Microsoft.DotNet.Interactive.Connection;
-using Microsoft.DotNet.Interactive.Documents;
-using sequential_reveal_md_tool;
+﻿using sequential_reveal_md_tool;
 
 namespace SequentialRevealMarkdownToolTests;
 

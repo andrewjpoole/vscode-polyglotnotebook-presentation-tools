@@ -8,7 +8,7 @@
     <IsPackable>true</IsPackable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>sequential-reveal-md-tool</PackageId>
-    <Version>1.2.0</Version>
+    <Version>1.3.0</Version>
     <Authors>Andrew Poole</Authors>
     <Description>A tool for sequentially revealing Markdown content in Polyglot Notebooks for use in presentations.</Description>
     <PackageTags>markdown;interactive;dotnet;polyglotnotebook;presentation</PackageTags>
@@ -17,6 +17,7 @@
     <PackageProjectUrl>https://github.com/your-repo/vscode-polyglotnotebook-presentation-tools</PackageProjectUrl>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
     <releaseNotes>
+    1.3.0 Now supports revealing code blocks, which are rendered as a single section.
     1.2.0 Now supports comments and style tags in the markdown, therefore removed the methods which accepted a style string.
     1.1.1 Improvements around round use of css styles 
     1.0.0 Initial commit

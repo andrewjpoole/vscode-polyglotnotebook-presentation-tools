@@ -94,36 +94,29 @@ public record Notebook(
         var markdownLines = precedingMarkdownCell.Source;
         if(markdownLines == null)
             throw new ApplicationException("No content found in the preceding Markdown cell.");
-       
-        // var markdownSections = markdownLines
-        //     .Where(x => string.IsNullOrWhiteSpace(x)== false)
-        //     .ToArray();
 
         var markdownSections = MarkdownSectionSplitter.Split(markdownLines);
 
         var sb = new StringBuilder();
 
         // If no previous output just return the first section
-        if(currentCell.Outputs is null || currentCell.Outputs.Count == 0)
+        var markdownOutputs = currentCell.GetMarkdownOutputs();
+        if(markdownOutputs.Count == 0)
         { 
             // Output first markdown section
             foreach (var line in markdownSections.First())
-            {
-                sb.AppendLine(line.Trim());
-            }            
+                sb.AppendLine(line.Trim());        
 
             return sb.ToString();
         }
 
         // Enumerate outputs to determine the last displayed Markdown, there is likely only one output.
         var lastMarkdownOutput = "";
-        foreach(var markdownOutputCell in currentCell.GetMarkdownOutputs())
+        foreach(var markdownOutput in markdownOutputs)
         {
-            var outputDataLines = markdownOutputCell.GetMarkdownLines();
+            var outputDataLines = markdownOutput.GetMarkdownLines();
             if (outputDataLines != null && outputDataLines.Length > 0)
-            {
                 lastMarkdownOutput = outputDataLines.Last(x => string.IsNullOrWhiteSpace(x) == false);
-            }
         }
 
         var lastMarkdownOutputLine = lastMarkdownOutput.Split(["\n"], StringSplitOptions.RemoveEmptyEntries).Last();
@@ -146,9 +139,7 @@ public record Notebook(
         for (int i = 0; i <= sectionsToDisplay; i++)
         {
             foreach (var line in markdownSections[i])
-            {
-                sb.AppendLine(line.Trim());
-            }     
+                sb.AppendLine(line.Trim()); 
         }
 
         return sb.ToString();
