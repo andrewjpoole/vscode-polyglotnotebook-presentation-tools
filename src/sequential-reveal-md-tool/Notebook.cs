@@ -67,26 +67,9 @@ public record Notebook(
     {
         var markdownContent = RenderNextSequentialSectionFromPrecedingMarkdownCell(tag);
         markdownContent.DisplayAs("text/markdown");
-    }
-
-    /// <summary>
-    /// Display the next sequential section from the preceding Markdown cell using a style string.
-    /// This method is useful for applying specific styles to the displayed content.
-    /// </summary>
-    /// <param name="tag">A string containing a cell tag used to locate the current cell in the notebook file, consequently also used to find the preceding markdown cell.</param>
-    /// <param name="styleString">A string containing css styles which will be prepended to the markdown output, intended to be used to make font size large enough to see during a presentation.
-    // example: <link rel=\"stylesheet\" href=\"styles.css\"> where styles.css is a file in the same directory as the notebook file.
-    // example: <style>font-size: 2em;</style> where the style is applied to the markdown output.
-    // </param>
-    public void DisplayNextSequentialSectionFromPrecedingMarkdownCellUsingStyleString(string tag, string styleString)
-    {
-        var styleLines = styleString.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
-
-        var markdownContent = RenderNextSequentialSectionFromPrecedingMarkdownCell(tag, styleLines);
-        markdownContent.DisplayAs("text/markdown");
     }    
 
-    public string RenderNextSequentialSectionFromPrecedingMarkdownCell(string tag, string[]? styleLines = null)
+    public string RenderNextSequentialSectionFromPrecedingMarkdownCell(string tag)
     {
         if(Cells is null)
             throw new ArgumentException("Notebook contains no cells.");
@@ -111,35 +94,24 @@ public record Notebook(
         var markdownLines = precedingMarkdownCell.Source;
         if(markdownLines == null)
             throw new ApplicationException("No content found in the preceding Markdown cell.");
-
-        // If we have a styleLines, we should remove them from markdownLines here...
-        if(styleLines != null)
-        {
-            for (int i = 0; i < styleLines.Length; i++)
-            {
-                if(markdownLines[0] == styleLines[i])
-                    markdownLines.Remove(styleLines[i]);
-            }
-        }
        
-        var markdownSections = markdownLines
-                        .Where(x => string.IsNullOrWhiteSpace(x)== false)
-                        .ToArray();
+        // var markdownSections = markdownLines
+        //     .Where(x => string.IsNullOrWhiteSpace(x)== false)
+        //     .ToArray();
+
+        var markdownSections = MarkdownSectionSplitter.Split(markdownLines);
 
         var sb = new StringBuilder();
 
         // If no previous output just return the first section
         if(currentCell.Outputs is null || currentCell.Outputs.Count == 0)
-        {            
-            if(styleLines != null)
+        { 
+            // Output first markdown section
+            foreach (var line in markdownSections.First())
             {
-                foreach (var line in styleLines)
-                {
-                    sb.Append(line);
-                }
-                sb.AppendLine(Environment.NewLine);
-            }
-            sb.AppendLine(markdownSections[0]);
+                sb.AppendLine(line.Trim());
+            }            
+
             return sb.ToString();
         }
 
@@ -154,35 +126,29 @@ public record Notebook(
             }
         }
 
-        var lastMarkdownoutputLine = lastMarkdownOutput.Split(["\n"], StringSplitOptions.RemoveEmptyEntries).Last();
+        var lastMarkdownOutputLine = lastMarkdownOutput.Split(["\n"], StringSplitOptions.RemoveEmptyEntries).Last();
 
         // Determine how many sections to display
         int sectionsToDisplay = 1;
-        for (int i = 0; i < markdownSections.Length; i++)
+        for (int i = 0; i < markdownSections.Count; i++)
         {
-            if (lastMarkdownoutputLine == markdownSections[i].Trim())
+            if (lastMarkdownOutputLine.Trim() == markdownSections[i].Last().Trim())
             {
                 sectionsToDisplay = i + 1;
                 break;
             }
         }
 
-        if(sectionsToDisplay >= markdownSections.Length)
-            sectionsToDisplay = markdownSections.Length - 1;
+        if(sectionsToDisplay >= markdownSections.Count)
+            sectionsToDisplay = markdownSections.Count - 1;
 
-        // Build the output with the appropriate number of sections
-        if(styleLines != null)
-        {
-            foreach (var line in styleLines)
-            {
-                sb.Append(line);
-            }
-            sb.AppendLine(Environment.NewLine);
-        }
-
+        // Build the output with the appropriate number of sections    
         for (int i = 0; i <= sectionsToDisplay; i++)
         {
-            sb.AppendLine(markdownSections[i]);
+            foreach (var line in markdownSections[i])
+            {
+                sb.AppendLine(line.Trim());
+            }     
         }
 
         return sb.ToString();

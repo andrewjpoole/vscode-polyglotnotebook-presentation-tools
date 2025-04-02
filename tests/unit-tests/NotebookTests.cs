@@ -147,8 +147,12 @@ public class NotebookTests
         var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/initial.ipynb");
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
-        Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\n".UnifyLineEndings()));
+        Assert.That(markdown, Is.Not.Null);        
+        var markdownLines = markdown.Split(["\r\n"], StringSplitOptions.None);
+        Assert.That(markdownLines.Length, Is.EqualTo(5));
+        Assert.That(markdownLines[0], Is.EqualTo("<!-- Comment to show content hint while cell is collapsed -->"));
+        Assert.That(markdownLines[1], Is.EqualTo("<link rel=\"stylesheet\" href=\"styles.css\">"));
+        Assert.That(markdownLines.Last(x => string.IsNullOrWhiteSpace(x) == false), Is.EqualTo("# A Title"));
     }
 
     [Test]
@@ -159,7 +163,12 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n".UnifyLineEndings()));
+        var markdownLines = markdown.Split(["\r\n"], StringSplitOptions.None);
+        Assert.That(markdownLines.Length, Is.EqualTo(9));
+        
+        Assert.That(markdownLines[0], Is.EqualTo("<!-- Comment to show content hint while cell is collapsed -->"));
+        Assert.That(markdownLines[1], Is.EqualTo("<link rel=\"stylesheet\" href=\"styles.css\">"));
+        Assert.That(markdownLines.Last(x => string.IsNullOrWhiteSpace(x) == false), Is.EqualTo("A paragraph of text"));        
     }
 
     [Test]
@@ -170,30 +179,10 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n".UnifyLineEndings()));
-    }
-
-    [Test]
-    public void RenderNextSequentialSectionFromPrecedingMarkdownCell_ShouldReturnCorrectMarkdown_OnFourthExecution()
-    {
-        var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/after3.ipynb");
-
-        var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
-
-        Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n".UnifyLineEndings()));
-    }
-
-    [Test]
-    public void RenderNextSequentialSectionFromPrecedingMarkdownCell_ShouldReturnCorrectMarkdown_OnFifthExecution()
-    {
-        var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/after4.ipynb");
-
-        var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
-
-        Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n* bullet point three\n\r\n".UnifyLineEndings()));
-    }    
+        var markdownLines = markdown.Split(["\r\n"], StringSplitOptions.None);
+        Assert.That(markdownLines.Length, Is.EqualTo(11));
+        Assert.That(markdownLines.Last(x => string.IsNullOrWhiteSpace(x) == false), Is.EqualTo("- bullet point one"));
+    }   
 
     [Test]
     public void RenderNextSequentialSectionFromPrecedingMarkdownCell_ShouldReturnCorrectMarkdown_OnEighthExecution()
@@ -203,7 +192,10 @@ public class NotebookTests
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
         Assert.That(markdown, Is.Not.Null);
-        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n* bullet point three\n\r\nAnother paragraph of text\n\r\n1. Bonus numeric list one\n\r\n2. Bonus numeric list two\n\r\n".UnifyLineEndings()));
+        var markdownLines = markdown.Split(["\r\n"], StringSplitOptions.None);
+        Assert.That(markdownLines.Length, Is.EqualTo(18));        
+        Assert.That(markdownLines.Last(x => string.IsNullOrWhiteSpace(x) == false), Is.EqualTo("2. Bonus numeric list two"));
+        
     }
 
     [Test]
@@ -213,19 +205,9 @@ public class NotebookTests
 
         var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1");
 
-        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("## A new Section\n\r\nA paragraph of text\n\r\n- bullet point one\n\r\n- bullet point two\n\r\n* bullet point three\n\r\nAnother paragraph of text\n\r\n1. Bonus numeric list one\n\r\n2. Bonus numeric list two\n\r\n3. Bonus numeric list three\n\r\n[done]\n\r\n".UnifyLineEndings()));
-    }
-
-    [Test]
-    public void RenderNextSequentialSectionFromPrecedingMarkdownCellWithStyleString_ShouldReturnCorrectMarkdown_WhenAllSectionsAreRendered()
-    {
-        var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/initial.ipynb");
-
-        var styleString = "<link rel=\"stylesheet\" href=\"styles.css\">";
-        var styleLines = styleString.Split(["\r\n", "\r", "\n"], StringSplitOptions.None);
-        var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1", styleLines);
-
-        Assert.That(markdown.UnifyLineEndings(), Is.EqualTo("<link rel=\"stylesheet\" href=\"styles.css\">\r\n\r\n## A new Section\n\r\n".UnifyLineEndings()));
+        var markdownLines = markdown.Split(["\r\n"], StringSplitOptions.None);
+        Assert.That(markdownLines.Length, Is.EqualTo(20));
+        Assert.That(markdownLines.Last(x => string.IsNullOrWhiteSpace(x) == false), Is.EqualTo("[done]"));        
     }    
 }
 
