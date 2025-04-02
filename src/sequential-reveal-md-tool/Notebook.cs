@@ -63,14 +63,19 @@ public record Notebook(
     /// Display the next sequential section from the preceding Markdown cell.
     /// </summary>
     /// <param name="tag">A string containing a cell tag used to locate the current cell in the notebook file, consequently also used to find the preceding markdown cell.</param>
-    public void DisplayNextSequentialSectionFromPrecedingMarkdownCell(string tag)
+    /// <param name="appendLinesOfSpace">An integer which if non zero, will trigger a div of the specified height (rem) to be appended to the end of the markdown. 
+    /// This should prevent the next slide content from showing.
+    /// </param>
+    public void DisplayNextSequentialSectionFromPrecedingMarkdownCell(string tag, int appendLinesOfSpace = 0)
     {
-        var markdownContent = RenderNextSequentialSectionFromPrecedingMarkdownCell(tag);
+        var markdownContent = RenderNextSequentialSectionFromPrecedingMarkdownCell(tag, appendLinesOfSpace);
         markdownContent.DisplayAs("text/markdown");
     }    
 
-    public string RenderNextSequentialSectionFromPrecedingMarkdownCell(string tag)
+    public string RenderNextSequentialSectionFromPrecedingMarkdownCell(string tag, int appendLinesOfSpace = 0)
     {
+        var appendSpaceString = $"<div style=\"display:block; height:{appendLinesOfSpace}rem;\"></div>";
+ 
         if(Cells is null)
             throw new ArgumentException("Notebook contains no cells.");
 
@@ -107,6 +112,9 @@ public record Notebook(
             foreach (var line in markdownSections.First())
                 sb.AppendLine(line.Trim());        
 
+            if(appendLinesOfSpace > 0)
+                sb.AppendLine(appendSpaceString);
+
             return sb.ToString();
         }
 
@@ -115,9 +123,14 @@ public record Notebook(
         foreach(var markdownOutput in markdownOutputs)
         {
             var outputDataLines = markdownOutput.GetMarkdownLines();
+
+            // Remove appended space div if present
+            if(appendLinesOfSpace > 0 && outputDataLines[^1].Trim() == appendSpaceString)
+                outputDataLines[^1] = string.Empty;
+
             if (outputDataLines != null && outputDataLines.Length > 0)
                 lastMarkdownOutput = outputDataLines.Last(x => string.IsNullOrWhiteSpace(x) == false);
-        }
+        }        
 
         var lastMarkdownOutputLine = lastMarkdownOutput.Split(["\n"], StringSplitOptions.RemoveEmptyEntries).Last();
 
@@ -141,6 +154,9 @@ public record Notebook(
             foreach (var line in markdownSections[i])
                 sb.AppendLine(line.Trim()); 
         }
+
+        if(appendLinesOfSpace > 0)
+            sb.AppendLine(appendSpaceString);
 
         return sb.ToString();
     }    

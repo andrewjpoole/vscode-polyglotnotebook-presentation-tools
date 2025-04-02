@@ -204,16 +204,60 @@ public class NotebookTests
         var markdownLines = markdown.SplitOnUniversalLineEndings();
         Assert.That(markdownLines.Length, Is.EqualTo(20));
         Assert.That(markdownLines.Last(x => string.IsNullOrWhiteSpace(x) == false), Is.EqualTo("[done]"));        
-    }    
+    }
+
+    [Test]
+    public void RenderNextSequentialSectionFromPrecedingMarkdownCell_ShouldReturnCorrectMarkdown_WithGuardingSpace_OnFirstExecution()
+    {        
+        var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/initial.ipynb");
+        var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1", 30);
+
+        Assert.That(markdown, Is.Not.Null);        
+        var markdownLines = markdown.SplitOnUniversalLineEndings();
+        Assert.That(markdownLines.Length, Is.EqualTo(6));
+        Assert.That(markdownLines[0], Is.EqualTo("<!-- Comment to show content hint while cell is collapsed -->"));
+        Assert.That(markdownLines[^3], Is.EqualTo("# A Title"));
+        Assert.That(markdownLines[^2], Is.EqualTo("<div style=\"display:block; height:30rem;\"></div>"));
+    }
+
+    [Test]
+    public void RenderNextSequentialSectionFromPrecedingMarkdownCell_ShouldReturnCorrectMarkdown_WithGuardingSpace_OnSecondExecution()
+    {
+        var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/after1withSpace.ipynb");
+
+        var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1", 30);
+
+        Assert.That(markdown, Is.Not.Null);
+        var markdownLines = markdown.SplitOnUniversalLineEndings();
+        Assert.That(markdownLines.Length, Is.EqualTo(10));
+        
+        Assert.That(markdownLines[0], Is.EqualTo("<!-- Comment to show content hint while cell is collapsed -->"));
+        Assert.That(markdownLines[1], Is.EqualTo("<link rel=\"stylesheet\" href=\"styles.css\">"));
+        Assert.That(markdownLines[^3], Is.EqualTo("A paragraph of text"));
+        Assert.That(markdownLines[^2], Is.EqualTo("<div style=\"display:block; height:30rem;\"></div>"));      
+    }
+
+     [Test]
+    public void RenderNextSequentialSectionFromPrecedingMarkdownCell_ShouldReturnCorrectMarkdown_WithGuardingSpace_WhenAllSectionsRendered()
+    {
+        var sut = Notebook.FromFile(TestContext.CurrentContext.TestDirectory + "/testData/sequentialReveal/after10withSpace.ipynb");
+
+        var markdown = sut.RenderNextSequentialSectionFromPrecedingMarkdownCell("cell1", 30);
+
+        Assert.That(markdown, Is.Not.Null);
+        var markdownLines = markdown.SplitOnUniversalLineEndings();
+        Assert.That(markdownLines.Length, Is.EqualTo(21));
+        
+        Assert.That(markdownLines[0], Is.EqualTo("<!-- Comment to show content hint while cell is collapsed -->"));
+        Assert.That(markdownLines[1], Is.EqualTo("<link rel=\"stylesheet\" href=\"styles.css\">"));
+        Assert.That(markdownLines[^3], Is.EqualTo("[done]"));
+        Assert.That(markdownLines[^2], Is.EqualTo("<div style=\"display:block; height:30rem;\"></div>"));      
+    }
+    
 }
 
 public static class StringExtensions
 {
-    public static string UnifyLineEndings(this string str)
-    {
-        return str.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
-    }
-
     public static string[] SplitOnUniversalLineEndings(this string markdown)
     {
         return markdown.Split(["\r\n", "\n"], StringSplitOptions.None);
